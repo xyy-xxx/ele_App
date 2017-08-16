@@ -3,94 +3,101 @@
   <div class="header">
     <div class="header-main">
       <div class="img_logo">
-        <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" width="64" height="64">
+        <img :src="seller.avatar" width="64" height="64">
       </div>
       <div class="content">
         <div class="title">
           <span class="brand"></span>
-          <span class="name">粥品香坊（回龙观）</span>
+          <span class="name">{{seller.name}}</span>
         </div>
         <div class="description">
-          蜂鸟专送/38分钟送达
+          {{seller.description}}/{{seller.deliveryTime}}分钟送达
         </div>
-        <div class="supports">
-          <span class="icon decrease" ></span>
-          <span class="text">在线支付满88送妹子</span>
+        <div class="supports" v-if="seller.supports">
+          <span class="icon" :class="classes[seller.supports[0].type]"></span>
+          <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div class="five">
-        <span>5个</span>
+      <div class="five" v-if="seller.supports" @click="MaskShow(true)">
+        <span>{{seller.supports.length}}个</span>
         <span class="icon-keyboard_arrow_right"></span>
       </div>
     </div>
-    <div class="bulletin">
+    <div class="bulletin" @click="MaskShow(true)">
       <span class="bulletin_title"></span>
-      <span class="bulletin_content">粥品香坊其烹饪粥料的秘方源于中国千年古法，在融和现代制作工艺，由世界烹饪大师屈浩先生领衔研发。坚守纯天然、0添加的良心品质深得消费者青睐，发展至今成为粥类的引领品牌。是2008年奥运会和2013年园博会指定餐饮服务商。</span>
+      <span class="bulletin_content">{{seller.bulletin}}</span>
       <span class="icon-keyboard_arrow_right"></span>
     </div>
     <div class="background">
-      <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" width="100%" height="100%">
+      <img :src="seller.avatar" width="100%" height="100%">
     </div>
-    <div class="mask">
-      <div class="mask-main">
-        <div class="mask-content">
-          <h1 class="title">粥品香坊 ( 回龙观 )</h1>
-          <div class="stars-wrapper">
-            <div class="stars stars-48">
-              <span class="star on"></span>
-              <span class="star on"></span>
-              <span class="star on"></span>
-              <span class="star half"></span>
-              <span class="star off"></span>
+    <transition name="fade">
+      <div class="mask" v-show="showMask">
+        <div class="mask-main">
+          <div class="mask-content">
+            <h1 class="title">{{seller.name}}</h1>
+            <div class="stars-wrapper">
+              <start :score="seller.score" :size="48"></start>
+            </div>
+            <div class="info">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul class="list">
+              <li v-for="support in seller.supports">
+                <span class="icon" :class="classes[support.type]"></span>
+                <span class="text">{{support.description}}</span>
+              </li>
+            </ul>
+            <div class="info ">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="content">
+              <p>{{seller.bulletin}}</p>
             </div>
           </div>
-          <div class="info">
-            <div class="line"></div>
-            <div class="text">优惠信息</div>
-            <div class="line"></div>
-          </div>
-          <ul class="list">
-            <li>
-              <span class="icon decrease"></span>
-              <span class="text">在线支付满28减5,满50减10</span>
-            </li>
-            <li>
-              <span class="icon discount"></span>
-              <span class="text">单人精彩赛</span>
-            </li>
-            <li>
-              <span class="icon guarantee"></span>
-              <span class="text">清肺雪梨汤8折抢购</span>
-            </li>
-            <li>
-              <span class="icon invoice"></span>
-              <span class="text">特价饮品8折抢购</span>
-            </li>
-            <li>
-              <span class="icon special"></span>
-              <span class="text">单人特色套餐</span>
-            </li>
-          </ul>
-          <div class="info ">
-            <div class="line"></div>
-            <div class="text">商家公告</div>
-            <div class="line"></div>
-          </div>
-          <div class="content">
-            <p>粥品香坊其烹饪粥料的秘方源于中国千年古法，在融和现代制作工艺，由世界烹饪大师屈浩先生领衔研发。坚守纯天然、0添加的良心品质深得消费者青睐，发展至今成为粥类的引领品牌。是2008年奥运会和2013年园博会指定餐饮服务商。</p>
-          </div>
+        </div>
+        <div class="mask-footer">
+          <span class="icon-close" @click="MaskShow(false)"></span>
         </div>
       </div>
-      <div class="mask-footer">
-        <span class="icon-close"></span>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
-  export default{}
 
+  import stars from '../stars/stars.vue'
+
+  export default{
+
+    //v-if="seller.supports"  当seller.supports有值才解析后面的页面  避免解决为空的undefined的情况
+
+    props:{
+      seller:Object,
+    },
+
+    data(){
+      return{
+        showMask : false,
+        classes:['decrease','discount','guarantee','invoice','special']
+      }
+    },
+
+    methods:{
+      MaskShow(isShow){
+        this.showMask = isShow
+      }
+    },
+
+    components:{
+      start:stars
+    }
+
+  }
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
@@ -218,6 +225,10 @@
       height 100%
       background rgba(7,17,27,.8)
       overflow auto
+      &.fade-enter-active,&.fade-leave-active
+        transition opacity .5s
+      &.fade-enter,&.fade-leave-to
+        opacity 0
     .mask-main
       min-height 100%
       .mask-content
@@ -233,51 +244,6 @@
         .stars-wrapper
           height 24px
           margin 16px 0 28px 0
-          .stars
-            text-align center
-            .star
-              display inline-block
-              background-repeat no-repeat
-              background-size 100% 100%
-            &.stars-48
-              .star
-                width 20px
-                height 19px
-                margin-right 20px
-                &:last-child
-                  margin-right 0
-                &.on
-                  bg-image("../stars/star48_on")
-                &.half
-                  bg-image("../stars/star48_half")
-                &.off
-                  bg-image("../stars/star48_off")
-            &.stars-36
-              .star
-                width 15px
-                height 15px
-                margin-right 15px
-                &:last-child
-                  margin-right 0
-                &.on
-                  bg-image("../stars/star36_on")
-                &.half
-                  bg-image("../stars/star36_half")
-                &.off
-                  bg-image("../stars/star36_off")
-            &.stars-24
-              .star
-                width 10px
-                height 10px
-                margin-right 10px
-                &:last-child
-                  margin-right 0
-                &.on
-                  bg-image("../stars/star24_on")
-                &.half
-                  bg-image("../stars/star24_half")
-                &.off
-                  bg-image("../stars/star24_off")
         .info
           width 80%
           margin 0 auto
